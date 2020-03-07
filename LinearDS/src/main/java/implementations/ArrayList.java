@@ -48,22 +48,30 @@ public class ArrayList<E> implements List<E> {
 
     @Override
     public E get(int index) {
-
-        if (!validIndex(index)) {
-            throw new IndexOutOfBoundsException("Can not get index " + index + " on array with size " + this.size);
-        }
-
+        ensureIndex(index);
         return (E) this.elements[index];
     }
 
     @Override
     public E set(int index, E element) {
-        return null;
+        ensureIndex(index);
+        Object existing = this.elements[index];
+        this.elements[index] = element;
+        return (E) existing;
     }
 
     @Override
     public E remove(int index) {
-        return null;
+        ensureIndex(index);
+        Object existing = this.elements[index];
+        shiftLeft(index);
+        this.size--;
+
+        if (this.size <= this.capacity / 3) {
+            shrink();
+        }
+
+        return (E) existing;
     }
 
     @Override
@@ -73,22 +81,41 @@ public class ArrayList<E> implements List<E> {
 
     @Override
     public int indexOf(E element) {
-        return 0;
+        for (int i = 0; i < this.size; i++) {
+            if (this.elements[i].equals(element)) {
+                return i;
+            }
+        }
+        return -1;
     }
 
     @Override
     public boolean contains(E element) {
-        return false;
+        return this.indexOf(element) >= 0;
     }
 
     @Override
     public boolean isEmpty() {
-        return false;
+        return this.size == 0;
     }
 
     @Override
     public Iterator<E> iterator() {
-        return null;
+
+        return new Iterator<E>() {
+
+            private int index = 0;
+
+            @Override
+            public boolean hasNext() {
+                return index < size();
+            }
+
+            @Override
+            public E next() {
+                return get(index++);
+            }
+        };
     }
 
     private void grow() {
@@ -96,13 +123,30 @@ public class ArrayList<E> implements List<E> {
         this.elements = Arrays.copyOf(this.elements, this.capacity);
     }
 
+    private void shrink() {
+        this.capacity /= 2;
+        this.elements = Arrays.copyOf(this.elements, this.capacity);
+    }
+
     private void shiftRight(int index) {
-        for (int i = this.size-1; i > index-1; i--) {
+        for (int i = this.size - 1; i > index - 1; i--) {
             this.elements[i + 1] = this.elements[i];
+        }
+    }
+
+    private void shiftLeft(int index) {
+        for (int i = index; i < this.size; i++) {
+            this.elements[i] = this.elements[i + 1];
         }
     }
 
     private boolean validIndex(int index) {
         return index < this.size && index >= 0;
+    }
+
+    private void ensureIndex(int index) {
+        if (!validIndex(index)) {
+            throw new IndexOutOfBoundsException("Can not use index " + index + " on array with size " + this.size);
+        }
     }
 }

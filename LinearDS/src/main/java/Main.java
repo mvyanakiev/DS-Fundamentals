@@ -13,8 +13,11 @@ public class Main {
             System.out.println(arr.get(i));
         }
 
-        arr.add(1, 1024);
+
+
         System.out.println("--------------------");
+
+        System.out.println("removed " + arr.remove(2));
 
         for (int i = 0; i < arr.size(); i++) {
             System.out.println(arr.get(i));
