@@ -9,10 +9,10 @@ public class ArrayDequeTest {
     @Test
     public void testArrayDeque(){
         ArrayDeque<Integer> deque = new ArrayDeque<>();
-        deque.add(13);
-        deque.add(14);
-        deque.add(15);
-        deque.add(16);
-        deque.add(17);
+        deque.offer(13);
+        deque.offer(14);
+
+        System.out.println(deque.poll());
+
     }
 }
