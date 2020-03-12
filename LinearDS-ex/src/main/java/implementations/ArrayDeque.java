@@ -72,27 +72,11 @@ public class ArrayDeque<E> implements Deque<E> {
         }
     }
 
-    private void insertAndShiftRight(int index, E element) {
-        E lastElement = this.getAt(this.tail);
-        for (int i = this.tail; i > index; i--) {
-            this.elements[i] = this.elements[i - 1];
-        }
-        this.elements[index] = element;
-        this.addLast(lastElement);
-    }
-
-    private void insertAndShiftLeft(int index, E element) {
-        E firstElement = this.getAt(this.head);
-        for (int i = this.head; i < index; i++) {
-            this.elements[i] = this.elements[i + 1];
-        }
-        this.elements[index] = element;
-        this.addFirst(firstElement);
-    }
-
     @Override
     public void set(int index, E element) {
-
+        int realIndex = this.head + index;
+        this.ensureIndex(realIndex);
+        this.elements[realIndex] = element;
     }
 
     @Override
@@ -122,7 +106,10 @@ public class ArrayDeque<E> implements Deque<E> {
 
     @Override
     public E get(Object object) {
-        for (int i = this.head; i < this.tail; i++) {
+        if(isEmpty()){
+            return null;
+        }
+        for (int i = this.head; i <= this.tail; i++) {
             if (this.elements[i].equals(object)) {
                 return this.getAt(i);
             }
@@ -132,14 +119,34 @@ public class ArrayDeque<E> implements Deque<E> {
 
     @Override
     public E remove(int index) {
-        // fixme това не е вярно
         int realIndex = this.head + index;
         this.ensureIndex(realIndex);
-        return this.getAt(realIndex);
+        E element = this.getAt(realIndex);
+
+        for (int i = realIndex; i < this.tail ; i++) {
+            this.elements[i] = this.elements[i+1];
+        }
+        this.removeLast();
+        return element;
     }
 
     @Override
     public E remove(Object object) {
+        if(isEmpty()){
+            return null;
+        }
+        for (int i = this.head; i < this.tail; i++) {
+            if (this.elements[i].equals(object)) {
+                E element = this.getAt(i);
+                this.elements[i] = null;
+
+                for (int j = i; j < this.tail; j++) {
+                    this.elements[j] = this.elements[j + 1];
+                }
+                this.removeLast();
+                return element;
+            }
+        }
         return null;
     }
 
@@ -179,7 +186,12 @@ public class ArrayDeque<E> implements Deque<E> {
 
     @Override
     public void trimToSize() {
-
+        Object[] newElements = new Object[this.size];
+        int index = 0;
+        for (int i = this.head; i <= this.tail; i++) {
+            newElements[index++] = this.elements[i];
+        }
+        this.elements = newElements;
     }
 
     @Override
@@ -188,18 +200,18 @@ public class ArrayDeque<E> implements Deque<E> {
     }
 
     @Override
-    public Iterator<E> iterator() { //fixme
+    public Iterator<E> iterator() {
         return new Iterator<E>() {
             private int index = head;
 
             @Override
             public boolean hasNext() {
-                return index != tail;
+                return index <= tail;
             }
 
             @Override
             public E next() {
-                return get(index++);
+                return getAt(index++);
             }
         };
     }
@@ -228,5 +240,23 @@ public class ArrayDeque<E> implements Deque<E> {
             throw new IndexOutOfBoundsException("Index out of bound for index: "
                     + (realIndex - this.head));
         }
+    }
+
+    private void insertAndShiftRight(int index, E element) {
+        E lastElement = this.getAt(this.tail);
+        for (int i = this.tail; i > index; i--) {
+            this.elements[i] = this.elements[i - 1];
+        }
+        this.elements[index] = element;
+        this.addLast(lastElement);
+    }
+
+    private void insertAndShiftLeft(int index, E element) {
+        E firstElement = this.getAt(this.head);
+        for (int i = this.head; i < index; i++) {
+            this.elements[i] = this.elements[i + 1];
+        }
+        this.elements[index] = element;
+        this.addFirst(firstElement);
     }
 }
