@@ -1,19 +1,80 @@
 package implementations;
 
 import interfaces.AbstractTree;
+import jdk.jshell.EvalException;
 
-import java.util.List;
+import javax.swing.tree.TreeCellRenderer;
+import java.util.*;
 
 public class Tree<E> implements AbstractTree<E> {
+    private E value;
+    private Tree<E> parent;
+    private List<Tree<E>> children;
+
+
+    // https://youtu.be/xo9PV4clQ2Q?t=4635
+    // 1:17:15
+
+    public Tree(E value, Tree<E>... subtrees) {
+        this.value = value;
+        this.parent = null;
+        this.children = new ArrayList<>();
+
+        for (Tree<E> subtree : subtrees) {
+            this.children.add(subtree);
+        }
+
+        // други варианти за създаване
+//        Collections.addAll(this.children, subtrees);
+//        this.children.addAll(Arrays.asList(subtrees));
+    }
 
     @Override
     public List<E> orderBfs() {
-        return null;
+        List<E> result = new ArrayList<>();
+        Deque<Tree<E>> childrenQueue = new ArrayDeque<>();
+        childrenQueue.offer(this);
+
+        while (!childrenQueue.isEmpty()) {
+            Tree<E> current = childrenQueue.poll();
+
+            result.add(current.value);
+
+            for (Tree<E> child : current.children) {
+                childrenQueue.offer(child);
+            }
+        }
+        return result;
+    }
+
+    public List<E> orderStackDfs(){
+        List<E> result = new ArrayList<>();
+        Deque<Tree<E>> toTraverse = new ArrayDeque<>();
+        toTraverse.push(this);
+
+        while (!toTraverse.isEmpty()) {
+            Tree<E> current = toTraverse.pop();
+
+            for (Tree<E> node : current.children) {
+                toTraverse.push(node);
+            }
+            result.add(current.value);
+        }
+        return result;
     }
 
     @Override
     public List<E> orderDfs() {
-        return null;
+        List<E> result = new ArrayList<>();
+        this.doDfs(this, result);
+        return result;
+    }
+
+    private void doDfs(Tree<E> node, List<E> result) {
+        for (Tree<E> child : node.children) {
+            this.doDfs(child, result);
+        }
+        result.add(node.value);
     }
 
     @Override
@@ -21,7 +82,7 @@ public class Tree<E> implements AbstractTree<E> {
 
     }
 
-	@Override
+    @Override
     public void removeNode(E nodeKey) {
 
     }
@@ -31,6 +92,3 @@ public class Tree<E> implements AbstractTree<E> {
 
     }
 }
-
-
-
