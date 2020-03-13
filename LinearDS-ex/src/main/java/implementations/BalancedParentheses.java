@@ -16,7 +16,11 @@ public class BalancedParentheses implements Solvable {
             return null;
         }
 
-        for (int i = 0; i < this.parentheses.length() - 1 / 2; i++) {
+        if (this.parentheses.length() % 2 != 0){
+            return false;
+        }
+
+        for (int i = 0; i < (this.parentheses.length()) / 2; i++) {
             char char1 = this.parentheses.charAt(i);
             char char2 = this.parentheses.charAt(this.parentheses.length() - 1 - i);
 
@@ -36,6 +40,9 @@ public class BalancedParentheses implements Solvable {
                     if (char2 != '}')
                         return false;
                     break;
+
+                default:
+                    return false;
             }
         }
         return true;

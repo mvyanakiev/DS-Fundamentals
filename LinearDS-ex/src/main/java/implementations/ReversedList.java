@@ -38,11 +38,13 @@ public class ReversedList<E> implements RevList<E> {
 
     @Override
     public E get(int index) {
+        ensureIndex(index);
         return getAt(size-index-1);
     }
 
     @Override
     public E removeAt(int index) {
+        ensureIndex(index);
 
         int indexToRemove = size-index-1;
         E element = getAt(indexToRemove);
@@ -75,5 +77,12 @@ public class ReversedList<E> implements RevList<E> {
     @SuppressWarnings("unchecked")
     private E getAt(int index) {
         return (E) this.elements[index];
+    }
+
+    private void ensureIndex(int index) {
+        if (index < 0 || index > this.size) {
+            throw new IndexOutOfBoundsException("Index out of bound for index: "
+                    + (index));
+        }
     }
 }
