@@ -11,10 +11,6 @@ public class Tree<E> implements AbstractTree<E> {
     private Tree<E> parent;
     private List<Tree<E>> children;
 
-
-    // https://youtu.be/vvn-Vr_1F2U?t=4624
-    // 1:17:15
-
     public Tree(E value, Tree<E>... subtrees) {
         this.value = value;
         this.parent = null;
@@ -22,16 +18,16 @@ public class Tree<E> implements AbstractTree<E> {
 
         for (Tree<E> subtree : subtrees) {
             this.children.add(subtree);
+            subtree.parent = this;
         }
-
-        // други варианти за създаване
-//        Collections.addAll(this.children, subtrees);
-//        this.children.addAll(Arrays.asList(subtrees));
     }
 
     @Override
     public List<E> orderBfs() {
         List<E> result = new ArrayList<>();
+        if (this.value == null){
+            return result;
+        }
         Deque<Tree<E>> childrenQueue = new ArrayDeque<>();
         childrenQueue.offer(this);
 
@@ -66,6 +62,9 @@ public class Tree<E> implements AbstractTree<E> {
     @Override
     public List<E> orderDfs() {
         List<E> result = new ArrayList<>();
+        if (this.value == null){
+            return result;
+        }
         this.doDfs(this, result);
         return result;
     }
@@ -81,7 +80,7 @@ public class Tree<E> implements AbstractTree<E> {
     public void addChild(E parentKey, Tree<E> child) {
         Tree<E> search = find(parentKey);
 
-        if (search == null){
+        if (search == null) {
             throw new IllegalArgumentException();
         }
 
@@ -96,7 +95,7 @@ public class Tree<E> implements AbstractTree<E> {
         while (!childrenQueue.isEmpty()) {
             Tree<E> current = childrenQueue.poll();
 
-            if (current.value.equals(parentKey)){
+            if (current.value.equals(parentKey)) {
                 return current;
             }
 
@@ -110,11 +109,58 @@ public class Tree<E> implements AbstractTree<E> {
 
     @Override
     public void removeNode(E nodeKey) {
+        Tree<E> toRemove = find(nodeKey);
 
+        if (toRemove == null) {
+            throw new IllegalArgumentException();
+        }
+
+        for (Tree<E> child : toRemove.children) {
+            child.parent = null;
+        }
+        toRemove.children.clear();
+
+        Tree<E> parent = toRemove.parent;
+        if (parent != null) {
+            parent.children.remove(toRemove);
+        }
+        toRemove.value = null;
     }
 
     @Override
     public void swap(E firstKey, E secondKey) {
+        Tree<E> firstNode = find(firstKey);
+        Tree<E> secondNode = find(secondKey);
 
+        if (firstNode == null || secondNode == null){
+            throw new IllegalArgumentException();
+        }
+
+        Tree<E> firstParent = firstNode.parent;
+        Tree<E> secondParent = secondNode.parent;
+
+        if (firstParent == null){
+            swapRoot(secondNode);
+            return;
+        } else if(secondParent == null) {
+            swapRoot(firstNode);
+            return;
+        }
+
+        firstNode.parent = secondParent;
+        secondNode.parent = firstParent;
+
+        int firstIndex = firstParent.children.indexOf(firstNode);
+        int secondIndex = secondParent.children.indexOf(secondNode);
+
+        firstParent.children.set(firstIndex, secondNode);
+        secondParent.children.set(secondIndex, firstNode);
+    }
+
+    private void swapRoot(Tree<E> node) {
+        this.value = node.value;
+        this.parent = null;
+        this.children = node.children;
+        node.parent = null;
     }
 }
