@@ -12,7 +12,7 @@ public class Tree<E> implements AbstractTree<E> {
     private List<Tree<E>> children;
 
 
-    // https://youtu.be/xo9PV4clQ2Q?t=4635
+    // https://youtu.be/vvn-Vr_1F2U?t=4624
     // 1:17:15
 
     public Tree(E value, Tree<E>... subtrees) {
@@ -47,21 +47,21 @@ public class Tree<E> implements AbstractTree<E> {
         return result;
     }
 
-    public List<E> orderStackDfs(){
-        List<E> result = new ArrayList<>();
-        Deque<Tree<E>> toTraverse = new ArrayDeque<>();
-        toTraverse.push(this);
-
-        while (!toTraverse.isEmpty()) {
-            Tree<E> current = toTraverse.pop();
-
-            for (Tree<E> node : current.children) {
-                toTraverse.push(node);
-            }
-            result.add(current.value);
-        }
-        return result;
-    }
+//    public List<E> orderStackDfs(){
+//        List<E> result = new ArrayList<>();
+//        Deque<Tree<E>> toTraverse = new ArrayDeque<>();
+//        toTraverse.push(this);
+//
+//        while (!toTraverse.isEmpty()) {
+//            Tree<E> current = toTraverse.pop();
+//
+//            for (Tree<E> node : current.children) {
+//                toTraverse.push(node);
+//            }
+//            result.add(current.value);
+//        }
+//        return result;
+//    }
 
     @Override
     public List<E> orderDfs() {
@@ -79,7 +79,33 @@ public class Tree<E> implements AbstractTree<E> {
 
     @Override
     public void addChild(E parentKey, Tree<E> child) {
+        Tree<E> search = find(parentKey);
 
+        if (search == null){
+            throw new IllegalArgumentException();
+        }
+
+        search.children.add(child);
+        child.parent = search;
+    }
+
+    private Tree<E> find(E parentKey) {
+        Deque<Tree<E>> childrenQueue = new ArrayDeque<>();
+        childrenQueue.offer(this);
+
+        while (!childrenQueue.isEmpty()) {
+            Tree<E> current = childrenQueue.poll();
+
+            if (current.value.equals(parentKey)){
+                return current;
+            }
+
+            for (Tree<E> child : current.children) {
+                childrenQueue.offer(child);
+            }
+        }
+        return null;
+        // https://youtu.be/vvn-Vr_1F2U?t=5044
     }
 
     @Override
