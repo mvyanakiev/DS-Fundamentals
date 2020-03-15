@@ -39,19 +39,19 @@ public class ReversedList<E> implements RevList<E> {
     @Override
     public E get(int index) {
         ensureIndex(index);
-        return getAt(size-index-1);
+        return getAt(size - index - 1);
     }
 
     @Override
     public E removeAt(int index) {
         ensureIndex(index);
 
-        int indexToRemove = size-index-1;
+        int indexToRemove = size - index - 1;
         E element = getAt(indexToRemove);
         this.elements[indexToRemove] = null;
 
-        for (int i = indexToRemove; i < this.size ; i++) {
-            this.elements[i] = this.elements[i+1];
+        for (int i = indexToRemove; i < this.size - 1; i++) {
+            this.elements[i] = this.elements[i + 1];
         }
         this.size--;
         return element;
@@ -59,8 +59,8 @@ public class ReversedList<E> implements RevList<E> {
 
     @Override
     public Iterator<E> iterator() {
-        return new Iterator<E>() {
-            private int index = size-1;
+        return new Iterator<>() {
+            private int index = size - 1;
 
             @Override
             public boolean hasNext() {

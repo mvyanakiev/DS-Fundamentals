@@ -20,4 +20,36 @@ public class BalancedParenthesesTest {
         assertNotNull(solve);
         assertFalse(solve);
     }
+
+    @Test
+    public void odd() {
+        String input = "{[(-)]}";
+        Boolean solve = new BalancedParentheses(input).solve();
+        assertNotNull(solve);
+        assertTrue(solve);
+    }
+
+    @Test
+    public void testSpaces() {
+        String input = "{ [ ( ) ] }";
+        Boolean solve = new BalancedParentheses(input).solve();
+        assertNotNull(solve);
+        assertTrue(solve);
+    }
+
+    @Test
+    public void unbalanced() {
+        String input = "{ [() ]}";
+        Boolean solve = new BalancedParentheses(input).solve();
+        assertNotNull(solve);
+        assertTrue(solve);
+    }
+
+    @Test
+    public void incorrectDifChar() {
+        String input = "{[()-}";
+        Boolean solve = new BalancedParentheses(input).solve();
+        assertNotNull(solve);
+        assertFalse(solve);
+    }
 }

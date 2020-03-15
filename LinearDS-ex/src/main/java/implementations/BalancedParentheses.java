@@ -12,19 +12,24 @@ public class BalancedParentheses implements Solvable {
     @Override
     public Boolean solve() {
 
+
         if (this.parentheses.length() == 0) {
             return null;
         }
 
-        if (this.parentheses.length() % 2 != 0){
-            return false;
-        }
+//        if (this.parentheses.length() % 2 != 0){
+//            return false;
+//        }
 
-        for (int i = 0; i < (this.parentheses.length()) / 2; i++) {
-            char char1 = this.parentheses.charAt(i);
-            char char2 = this.parentheses.charAt(this.parentheses.length() - 1 - i);
+        String toCheck = this.parentheses.replaceAll("\\s+", "");
+        int size = toCheck.length();
 
-            switch (char1){
+
+        for (int i = 0; i < size / 2; i++) {
+            char char1 = toCheck.charAt(i);
+            char char2 = toCheck.charAt(size - 1 - i);
+
+            switch (char1) {
 
                 case '(':
                     if (char2 != ')')
@@ -41,8 +46,6 @@ public class BalancedParentheses implements Solvable {
                         return false;
                     break;
 
-                default:
-                    return false;
             }
         }
         return true;
