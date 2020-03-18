@@ -2,6 +2,9 @@ package implementations;
 
 import interfaces.Solvable;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class BalancedParentheses implements Solvable {
     private String parentheses;
 
@@ -17,13 +20,19 @@ public class BalancedParentheses implements Solvable {
             return null;
         }
 
-//        if (this.parentheses.length() % 2 != 0){
-//            return false;
-//        }
-
         String toCheck = this.parentheses.replaceAll("\\s+", "");
         int size = toCheck.length();
 
+
+        if (size % 2 != 0) {
+            char middleChar = toCheck.charAt(size / 2);
+
+            if (    middleChar == '(' || middleChar == ')' ||
+                    middleChar == '[' || middleChar == ']' ||
+                    middleChar == '{' || middleChar == '}') {
+                return false;
+            }
+        }
 
         for (int i = 0; i < size / 2; i++) {
             char char1 = toCheck.charAt(i);
@@ -46,6 +55,8 @@ public class BalancedParentheses implements Solvable {
                         return false;
                     break;
 
+                default:
+                    return false;
             }
         }
         return true;
