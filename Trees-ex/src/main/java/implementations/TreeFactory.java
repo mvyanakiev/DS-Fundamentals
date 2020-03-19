@@ -4,8 +4,6 @@ import java.util.Arrays;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
-//https://youtu.be/ijMFkTV0HUI?t=3889
-
 public class TreeFactory {
     private Map<Integer, Tree<Integer>> nodesByKeys;
 

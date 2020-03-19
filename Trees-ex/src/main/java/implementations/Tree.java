@@ -2,10 +2,11 @@ package implementations;
 
 import interfaces.AbstractTree;
 
+import java.util.ArrayDeque;
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.EnumSet;
+import java.util.Deque;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class Tree<E> implements AbstractTree<E> {
     private E key;
@@ -15,10 +16,6 @@ public class Tree<E> implements AbstractTree<E> {
     public Tree(E key) {
         this.key = key;
         this.children = new ArrayList<>();
-//        this.children.addAll(Arrays.asList(children));
-//        for (int i = 0; i < children.length; i++) {
-//            children[i].setParent(this);
-//        }
     }
 
     @Override
@@ -43,12 +40,58 @@ public class Tree<E> implements AbstractTree<E> {
 
     @Override
     public String getAsString() {
-        return null;
+        StringBuilder builder = new StringBuilder();
+        traverseTreeWithRecurrence(builder, 0, this);
+        return builder.toString().trim();
+    }
+
+    public List<Tree<E>> traverseWithBFS() {
+        StringBuilder builder = new StringBuilder();
+
+        Deque<Tree<E>> queue = new ArrayDeque<>();
+        queue.offer(this);
+
+        int indent = 0;
+
+        List<Tree<E>> allNodes = new ArrayList<>();
+
+        while (!queue.isEmpty()) {
+            Tree<E> tree = queue.poll();
+            allNodes.add(tree);
+
+            for (Tree<E> child : tree.children) {
+                queue.offer(child);
+            }
+        }
+        return allNodes;
+    }
+
+    private void traverseTreeWithRecurrence(StringBuilder builder, int indent, Tree<E> tree) {
+        builder
+                .append(this.getPadding(indent))
+                .append(tree.getKey())
+                .append("\r\n");
+
+        for (Tree<E> child : tree.children) {
+            traverseTreeWithRecurrence(builder, indent + 2, child);
+        }
+    }
+
+    private String getPadding(int size) {
+        StringBuilder builder = new StringBuilder();
+        for (int i = 0; i < size; i++) {
+            builder.append(" ");
+        }
+        return builder.toString();
     }
 
     @Override
     public List<E> getLeafKeys() {
-        return null;
+        return traverseWithBFS()
+                .stream()
+                .filter(tree -> tree.children.size() == 0)
+                .map(Tree::getKey)
+                .collect(Collectors.toList());
     }
 
     @Override
