@@ -2,10 +2,7 @@ package implementations;
 
 import interfaces.AbstractTree;
 
-import java.util.ArrayDeque;
-import java.util.ArrayList;
-import java.util.Deque;
-import java.util.List;
+import java.util.*;
 import java.util.stream.Collectors;
 
 public class Tree<E> implements AbstractTree<E> {
@@ -15,6 +12,10 @@ public class Tree<E> implements AbstractTree<E> {
 
     public Tree(E key) {
         this.key = key;
+        this.children = new ArrayList<>();
+    }
+
+    public Tree() {
         this.children = new ArrayList<>();
     }
 
@@ -124,7 +125,7 @@ public class Tree<E> implements AbstractTree<E> {
         for (Tree<E> tree : trees) {
             if (tree.isLeaf()) {
                 int currentPath = getStepsFromLeafToRoot(tree);
-                if (currentPath > maxPath){
+                if (currentPath > maxPath) {
                     maxPath = currentPath;
                     deepestLeftNode = tree;
                 }
@@ -150,12 +151,62 @@ public class Tree<E> implements AbstractTree<E> {
 
     @Override
     public List<E> getLongestPath() {
-        return null;
+        List<Tree<E>> trees = this.traverseWithBFS();
+        List<E> result = new ArrayList<>();
+
+        int maxPath = 0;
+
+        for (Tree<E> tree : trees) {
+            if (tree.isLeaf()) {
+                int currentPath = getStepsFromLeafToRoot(tree);
+                if (currentPath > maxPath) {
+                    maxPath = currentPath;
+                    result.clear();
+                    result.add(tree.getKey());
+
+                    Tree<E> current = tree;
+
+                    while (current.parent != null) {
+                        current = current.parent;
+                        result.add(current.getKey());
+                    }
+                }
+            }
+        }
+        Collections.reverse(result);
+        return result;
     }
 
     @Override
     public List<List<E>> pathsWithGivenSum(int sum) {
-        return null;
+
+        List<Tree<E>> trees = this.traverseWithBFS();
+        List<List<E>> result = new ArrayList<>();
+
+        for (Tree<E> tree : trees) {
+            int currentSum = 0;
+
+            Tree<E> current = tree;
+
+            while (current.parent != null) {
+                currentSum = currentSum + (Integer) current.getKey();
+                if (currentSum == sum){
+
+                    List<E> find = new ArrayList<>();
+
+                    Tree<E> current1 = tree;
+
+                    while (current1.parent != null) {
+                        current1 = current1.parent;
+                        find.add(current1.getKey());
+                    }
+                    result.add(find);
+                    break;
+                }
+                current = current.parent;
+            }
+        }
+        return result;
     }
 
     @Override
@@ -163,6 +214,3 @@ public class Tree<E> implements AbstractTree<E> {
         return null;
     }
 }
-
-
-
