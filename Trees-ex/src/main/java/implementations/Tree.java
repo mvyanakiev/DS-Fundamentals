@@ -46,12 +46,10 @@ public class Tree<E> implements AbstractTree<E> {
     }
 
     public List<Tree<E>> traverseWithBFS() {
-        StringBuilder builder = new StringBuilder();
 
         Deque<Tree<E>> queue = new ArrayDeque<>();
         queue.offer(this);
 
-        int indent = 0;
 
         List<Tree<E>> allNodes = new ArrayList<>();
 
@@ -96,12 +94,58 @@ public class Tree<E> implements AbstractTree<E> {
 
     @Override
     public List<E> getMiddleKeys() {
-        return null;
+
+        Deque<Tree<E>> queue = new ArrayDeque<>();
+        queue.offer(this);
+
+        List<E> middleNodes = new ArrayList<>();
+
+        while (!queue.isEmpty()) {
+            Tree<E> tree = queue.poll();
+
+            if (tree.parent != null && tree.children.size() > 0) {
+                middleNodes.add(tree.getKey());
+            }
+
+            for (Tree<E> child : tree.children) {
+                queue.offer(child);
+            }
+        }
+        return middleNodes;
     }
 
     @Override
     public Tree<E> getDeepestLeftmostNode() {
-        return null;
+        List<Tree<E>> trees = this.traverseWithBFS();
+        Tree<E> deepestLeftNode = null;
+
+        int maxPath = 0;
+
+        for (Tree<E> tree : trees) {
+            if (tree.isLeaf()) {
+                int currentPath = getStepsFromLeafToRoot(tree);
+                if (currentPath > maxPath){
+                    maxPath = currentPath;
+                    deepestLeftNode = tree;
+                }
+            }
+        }
+        return deepestLeftNode;
+    }
+
+    private int getStepsFromLeafToRoot(Tree<E> tree) {
+        int counter = 0;
+        Tree<E> current = tree;
+
+        while (current.parent != null) {
+            counter++;
+            current = current.parent;
+        }
+        return counter;
+    }
+
+    private boolean isLeaf() {
+        return this.parent != null && this.children.size() == 0;
     }
 
     @Override
