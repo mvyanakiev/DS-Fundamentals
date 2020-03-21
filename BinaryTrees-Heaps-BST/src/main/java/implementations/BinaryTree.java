@@ -43,7 +43,6 @@ public class BinaryTree<E> implements AbstractBinaryTree<E> {
         String padding = createPadding(indent) + this.getKey();
         result.append(padding);
 
-
         if (this.getLeft() != null) {
             String preOrder = this.getLeft().asIndentedPreOrder(indent + 2);
             result.append("\r\n");
@@ -65,6 +64,7 @@ public class BinaryTree<E> implements AbstractBinaryTree<E> {
         for (int i = 0; i < indent; i++) {
             builder.append(" ");
         }
+
         return builder.toString();
     }
 
@@ -103,14 +103,28 @@ public class BinaryTree<E> implements AbstractBinaryTree<E> {
 
     @Override
     public List<AbstractBinaryTree<E>> postOrder() {
+        List<AbstractBinaryTree<E>> result = new ArrayList<>();
 
-        // https://youtu.be/HyABStWM3Lg?t=4327
+        if(this.getLeft() != null){
+            result.addAll(this.getLeft().postOrder());
+        }
 
-        return null;
+        if(this.getRight() != null){
+            result.addAll(this.getRight().postOrder());
+        }
+
+        result.add(this);
+        return result;
     }
 
     @Override
     public void forEachInOrder(Consumer<E> consumer) {
-
+        if(this.getLeft() != null){
+            this.getLeft().forEachInOrder(consumer);
+        }
+        consumer.accept(this.getKey());
+        if(this.getRight() != null){
+            this.getRight().forEachInOrder(consumer);
+        }
     }
 }
