@@ -6,6 +6,8 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+//https://youtu.be/HyABStWM3Lg?t=7860
+
 public class PriorityQueue<E extends Comparable<E>> implements AbstractQueue<E> {
 
     @Override
