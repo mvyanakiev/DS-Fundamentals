@@ -20,8 +20,6 @@ public class TheMatrix {
 
     public void solve() {
 
-        //        fillMatrix(this.startRow, this.startCol);
-
         Deque<int[]> coordinates = new ArrayDeque<>();
 
         coordinates.offer(new int[]{this.startRow, this.startCol});
@@ -53,7 +51,6 @@ public class TheMatrix {
     }
 
     private boolean isInBounds(int row, int col) {
-//        return row >= 0 && row <= this.matrix.length && col >= 0 && col <= this.matrix[row].length;
         return !isOutOfBounds(row, col);
     }
 

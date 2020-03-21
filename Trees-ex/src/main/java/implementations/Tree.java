@@ -179,7 +179,6 @@ public class Tree<E> implements AbstractTree<E> {
 
     @Override
     public List<List<E>> pathsWithGivenSum(int sum) {
-
         List<Tree<E>> trees = this.traverseWithBFS();
         List<List<E>> result = new ArrayList<>();
 
@@ -190,11 +189,13 @@ public class Tree<E> implements AbstractTree<E> {
 
             while (current.parent != null) {
                 currentSum = currentSum + (Integer) current.getKey();
-                if (currentSum == sum){
+                if (currentSum == sum) {
 
                     List<E> find = new ArrayList<>();
 
                     Tree<E> current1 = tree;
+
+                    //todo refactor it
 
                     while (current1.parent != null) {
                         current1 = current1.parent;
@@ -211,6 +212,30 @@ public class Tree<E> implements AbstractTree<E> {
 
     @Override
     public List<Tree<E>> subTreesWithGivenSum(int sum) {
-        return null;
+        List<Tree<E>> trees = this.traverseWithBFS();
+        List<Tree<E>> result = new ArrayList<>();
+
+        for (Tree<E> tree : trees) {
+            if (tree.children.size() > 0 && checkForSum(sum, tree, result)) {
+                break;
+            }
+        }
+        return result;
+    }
+
+    private boolean checkForSum(int sum, Tree<E> node, List<Tree<E>> result) {
+        result.clear();
+        int currentSum = 0;
+        currentSum += (Integer) node.getKey();
+        result.add(node);
+
+        for (Tree<E> child : node.children) {
+            currentSum += (Integer) child.getKey();
+            result.add(child);
+            if (currentSum == sum) {
+                return true;
+            }
+        }
+        return false;
     }
 }

@@ -188,4 +188,69 @@ public class TreeTest {
         assertTrue(asString.contains("23"));
         assertTrue(asString.contains("6"));
     }
+
+    @Test
+    public void testTreesWithGivenSum1() {
+        String[] input = {
+                "7 19",
+                "7 21",
+                "7 14",
+                "19 1",
+                "19 12",
+                "19 31",
+                "14 23",
+                "14 6"
+        };
+        TreeFactory treeFactory = new TreeFactory();
+        Tree<Integer> tree = treeFactory.createTreeFromStrings(input);
+        List<Tree<Integer>> trees = tree.subTreesWithGivenSum(63);
+        String asString = trees.get(0).getAsString();
+        assertTrue(asString.contains("19"));
+        assertTrue(asString.contains("1"));
+        assertTrue(asString.contains("12"));
+        assertTrue(asString.contains("31"));
+    }
+
+    @Test
+    public void testTreesWithGivenSum2() {
+        String[] input = {
+                "7 19",
+                "7 21",
+                "7 14",
+                "19 1",
+                "19 12",
+                "19 31",
+                "14 23",
+                "14 6"
+        };
+        TreeFactory treeFactory = new TreeFactory();
+        Tree<Integer> tree = treeFactory.createTreeFromStrings(input);
+        List<Tree<Integer>> trees = tree.subTreesWithGivenSum(61);
+        String asString = trees.get(0).getAsString();
+        assertTrue(asString.contains("7"));
+        assertTrue(asString.contains("21"));
+        assertTrue(asString.contains("14"));
+        assertTrue(asString.contains("19"));
+
+    }
+
+
+        @Test
+        public void judge_zero_test() {
+            String[] input = {
+                    "7 19",
+                    "7 21",
+                    "7 14",
+                    "19 1",
+                    "19 12",
+                    "19 31",
+                    "14 23",
+                    "14 6"
+            };
+            TreeFactory treeFactory = new TreeFactory();
+            Tree<Integer> tree = treeFactory.createTreeFromStrings(input);
+            List<Tree<Integer>> trees = tree.subTreesWithGivenSum(43);
+//            assertEquals(1, trees.size());
+        }
+
 }
