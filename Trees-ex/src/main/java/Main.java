@@ -20,6 +20,9 @@ public class Main {
         TreeFactory treeFactory = new TreeFactory();
         Tree<Integer> tree = treeFactory.createTreeFromStrings(input);
 
+        List<Tree<Integer>> dfs = tree.traverseWithDFS();
+        List<Tree<Integer>> bfs = tree.traverseWithBFS();
+
         Tree<Integer> deepestLeftmostNode = tree.getDeepestLeftmostNode();
     }
 }

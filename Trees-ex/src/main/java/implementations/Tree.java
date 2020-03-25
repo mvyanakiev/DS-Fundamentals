@@ -212,7 +212,7 @@ public class Tree<E> implements AbstractTree<E> {
 
     @Override
     public List<Tree<E>> subTreesWithGivenSum(int sum) {
-        List<Tree<E>> trees = this.traverseWithBFS();
+        List<Tree<E>> trees = this.traverseWithDFS();
         List<Tree<E>> result = new ArrayList<>();
 
         for (Tree<E> tree : trees) {
@@ -221,6 +221,21 @@ public class Tree<E> implements AbstractTree<E> {
             }
         }
         return result;
+    }
+
+    public List<Tree<E>> traverseWithDFS() {
+        List<Tree<E>> result = new ArrayList<>();
+        Tree<E> tree = this;
+        result.add(tree);
+        doDFS(tree, result);
+        return result;
+    }
+
+    private void doDFS(Tree<E> tree, List<Tree<E>> result) {
+        for (Tree<E> child : tree.children) {
+            result.add(child);
+            doDFS(child, result);
+        }
     }
 
     private boolean checkForSum(int sum, Tree<E> node, List<Tree<E>> result) {

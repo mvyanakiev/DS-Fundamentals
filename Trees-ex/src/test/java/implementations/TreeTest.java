@@ -250,7 +250,7 @@ public class TreeTest {
             TreeFactory treeFactory = new TreeFactory();
             Tree<Integer> tree = treeFactory.createTreeFromStrings(input);
             List<Tree<Integer>> trees = tree.subTreesWithGivenSum(43);
-//            assertEquals(1, trees.size());
+            assertEquals(1, trees.size());
         }
 
 }
