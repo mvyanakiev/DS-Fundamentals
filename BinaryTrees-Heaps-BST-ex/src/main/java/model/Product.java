@@ -6,6 +6,7 @@ import java.util.Objects;
 
 public class Product implements Decrease<Product>, Comparable<Product> {
     private int price;
+
     public Product(int price) {
         this.price = price;
     }

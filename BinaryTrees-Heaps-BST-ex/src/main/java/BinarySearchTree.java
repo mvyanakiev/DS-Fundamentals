@@ -7,12 +7,16 @@ import java.util.List;
 public class BinarySearchTree<E extends Comparable<E>> {
     private Node<E> root;
 
+    public BinarySearchTree(E element) {
+        this.root = new Node<>(element);
+    }
+
     public static class Node<E> {
         private E value;
         private Node<E> leftChild;
         private Node<E> rightChild;
 
-		public Node(E value) {
+        public Node(E value) {
             this.value = value;
         }
 
@@ -28,28 +32,48 @@ public class BinarySearchTree<E extends Comparable<E>> {
             return this.value;
         }
     }
-	
-	public void eachInOrder(Consumer<E> consumer) {
-            
+
+    public void eachInOrder(Consumer<E> consumer) {
+        // todo 17:57
+
     }
 
     public Node<E> getRoot() {
-        return null;
+        return this.root;
     }
 
     public void insert(E element) {
+        insertInto(this.root, element);
+    }
 
+    private void insertInto(Node<E> node, E element) {
+        if (isGreater(element, node)) {
+            if (node.getRight() == null) {
+                node.rightChild = new Node<>(element);
+            } else {
+                insertInto(node.getRight(), element);
+            }
+        } else if (isLess(element, node)) {
+            if (node.getLeft() == null) {
+                node.leftChild = new Node<>(element);
+            } else {
+                insertInto(node.getLeft(), element);
+            }
+        }
     }
 
     public boolean contains(E element) {
         return false;
     }
+
     public BinarySearchTree<E> search(E element) {
         return null;
     }
+
     public List<E> range(E first, E second) {
-      return null;
+        return null;
     }
+
     public void deleteMin() {
 
     }
@@ -72,5 +96,17 @@ public class BinarySearchTree<E extends Comparable<E>> {
 
     public E floor(E element) {
         return null;
+    }
+
+    private boolean isLess(E element, Node<E> node) {
+        return element.compareTo(node.getValue()) < 0;
+    }
+
+    private boolean isGreater(E element, Node<E> node) {
+        return element.compareTo(node.getValue()) > 0;
+    }
+
+    private boolean isEqual(E element, Node<E> node) {
+        return element.compareTo(node.getValue()) == 0;
     }
 }
