@@ -34,8 +34,16 @@ public class BinarySearchTree<E extends Comparable<E>> {
     }
 
     public void eachInOrder(Consumer<E> consumer) {
-        // todo 17:57
+         nodeInOrder(this.root, consumer);
 
+    }
+
+    private void nodeInOrder(Node<E> node, Consumer<E> consumer) {
+        if(node == null) {return;}
+
+        nodeInOrder(node.getLeft(), consumer);
+        consumer.accept(node.getValue());
+        nodeInOrder(node.getRight(), consumer);
     }
 
     public Node<E> getRoot() {
