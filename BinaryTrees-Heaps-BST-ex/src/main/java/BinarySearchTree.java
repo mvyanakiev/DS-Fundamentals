@@ -1,5 +1,8 @@
-import solutions.BinaryTree;
+import com.gs.collections.impl.lazy.parallel.list.DistinctBatch;
 
+import java.util.ArrayDeque;
+import java.util.ArrayList;
+import java.util.Deque;
 import java.util.function.Consumer;
 
 import java.util.List;
@@ -7,17 +10,39 @@ import java.util.List;
 public class BinarySearchTree<E extends Comparable<E>> {
     private Node<E> root;
 
+    public BinarySearchTree() { //56:11
+    }
+
     public BinarySearchTree(E element) {
         this.root = new Node<>(element);
+    }
+
+    public BinarySearchTree(Node<E> otherRoot) {
+        this.root = new Node<>(otherRoot);
     }
 
     public static class Node<E> {
         private E value;
         private Node<E> leftChild;
         private Node<E> rightChild;
+        private int count;
 
         public Node(E value) {
             this.value = value;
+            this.count = 1;
+        }
+
+        public Node(Node<E> other) {
+            this.value = other.value;
+            this.count = other.count;
+
+            if (other.getLeft() != null) {
+                this.leftChild = new Node<>(other.getLeft());
+            }
+
+            if (other.getRight() != null) {
+                this.rightChild = new Node<>(other.getRight());
+            }
         }
 
         public Node<E> getLeft() {
@@ -31,16 +56,21 @@ public class BinarySearchTree<E extends Comparable<E>> {
         public E getValue() {
             return this.value;
         }
+
+        public int getCount() {
+            return this.count;
+        }
     }
 
     public void eachInOrder(Consumer<E> consumer) {
-         nodeInOrder(this.root, consumer);
+        nodeInOrder(this.root, consumer);
 
     }
 
     private void nodeInOrder(Node<E> node, Consumer<E> consumer) {
-        if(node == null) {return;}
-
+        if (node == null) {
+            return;
+        }
         nodeInOrder(node.getLeft(), consumer);
         consumer.accept(node.getValue());
         nodeInOrder(node.getRight(), consumer);
@@ -51,7 +81,11 @@ public class BinarySearchTree<E extends Comparable<E>> {
     }
 
     public void insert(E element) {
-        insertInto(this.root, element);
+        if (this.root == null) {
+            this.root = new Node<>(element);
+        } else {
+            insertInto(this.root, element);
+        }
     }
 
     private void insertInto(Node<E> node, E element) {
@@ -68,42 +102,185 @@ public class BinarySearchTree<E extends Comparable<E>> {
                 insertInto(node.getLeft(), element);
             }
         }
+        node.count++;
     }
 
     public boolean contains(E element) {
-        return false;
+//        return containsNodeRecursion(this.root, element);
+        return containsNodeIteration(this.root, element) != null;
+    }
+
+    private boolean containsNodeRecursion(Node<E> node, E element) {
+        if (node == null) {
+            return false;
+        }
+
+        if (isEqual(element, node)) {
+            return true;
+        } else if (isGreater(element, node)) {
+            return containsNodeRecursion(node.getRight(), element);
+        }
+        return containsNodeRecursion(node.getLeft(), element);
+    }
+
+
+    private Node<E> containsNodeIteration(Node<E> node, E element) {
+        if (node == null) {
+            return null;
+        }
+
+        if (isEqual(element, node)) {
+            return node;
+        } else if (isGreater(element, node)) {
+            return containsNodeIteration(node.getRight(), element);
+        }
+
+        return containsNodeIteration(node.getLeft(), element);
     }
 
     public BinarySearchTree<E> search(E element) {
-        return null;
+        Node<E> found = containsNodeIteration(this.root, element);
+
+        return found == null ? null : new BinarySearchTree<>(found);
     }
 
-    public List<E> range(E first, E second) {
-        return null;
+    public List<E> range(E lower, E upper) {
+        List<E> result = new ArrayList<>();
+
+        Deque<Node<E>> queue = new ArrayDeque<>();
+        queue.offer(this.root);
+
+        while (!queue.isEmpty()) {
+            Node<E> current = queue.poll();
+
+            if (this.root == null) {
+                return result;
+            }
+
+            if (current.getLeft() != null) {
+                queue.offer(current.getLeft());
+            }
+            if (current.getRight() != null) {
+                queue.offer(current.getRight());
+            }
+
+            if (isLess(lower, current) && isGreater(upper, current)) {
+                result.add(current.getValue());
+            } else if (isEqual(upper, current) || isEqual(lower, current)) {
+                result.add(current.getValue());
+            }
+        }
+        return result;
     }
 
     public void deleteMin() {
+        ensureNonEmpty();
 
+        if (this.root.getLeft() == null) {
+            this.root = this.root.getRight();
+            return;
+        }
+
+        Node<E> current = this.root;
+        while (current.getLeft().getLeft() != null) {
+            current.count--;
+            current = current.getLeft();
+        }
+        current.count--;
+        current.leftChild = current.getLeft().getRight();
     }
 
     public void deleteMax() {
+        ensureNonEmpty();
 
+        if (this.root.getRight() == null) {
+            this.root = this.root.getLeft();
+            return;
+        }
+
+        Node<E> current = this.root;
+        while (current.getRight().getRight() != null) {
+            current.count--;
+            current = current.getRight();
+        }
+        current.count--;
+        current.rightChild = current.getRight().getLeft();
     }
 
     public int count() {
-        return 0;
+        return this.root == null ? 0 : this.root.count;
     }
 
     public int rank(E element) {
-        return 0;
+        return nodeRank(this.root, element);
     }
 
-    public E ceil(E element) {
-        return null;
+    private int nodeRank(Node<E> node, E element) {
+        if (node == null) {
+            return 0;
+        }
+
+        if (isLess(element, node)) {
+            return nodeRank(node.getLeft(), element);
+        } else if (isEqual(element, node)) {
+            return getNodeCount(node.getLeft());
+        }
+        return getNodeCount(node.getLeft()) + 1 + nodeRank(node.getRight(), element);
     }
 
     public E floor(E element) {
-        return null;
+        if (this.root == null) {
+            return null;
+        }
+
+        Node<E> current = this.root;
+        Node<E> nearestSmaller = null;
+
+        while (current != null) {
+            if (isGreater(element, current)) {
+                nearestSmaller = current;
+                current = current.getRight();
+            } else if (isLess(element, current)) {
+                current = current.getLeft();
+            } else {
+                Node<E> left = current.getLeft();
+                if (left != null && nearestSmaller != null) {
+                    nearestSmaller = isGreater(left.getValue(), nearestSmaller) ? left : nearestSmaller;
+                } else if (nearestSmaller == null) {
+                    nearestSmaller = left;
+                }
+                break;
+            }
+        }
+        return nearestSmaller == null ? null : nearestSmaller.getValue();
+    }
+
+    public E ceil(E element) {
+        if (this.root == null) {
+            return null;
+        }
+
+        Node<E> current = this.root;
+        Node<E> nearestBigger = null;
+
+        while (current != null){
+            if(isLess(element, current)) {
+                nearestBigger = current;
+                current = current.getLeft();
+            } else if (isGreater(element, current)) {
+                current = current.getRight();
+            } else {
+                Node<E> right = current.getRight();
+                if(right != null && nearestBigger != null){
+                    nearestBigger = isLess(right.getValue(), nearestBigger) ? right : nearestBigger;
+                }else if (nearestBigger == null) {
+                    nearestBigger = right;
+                }
+                break;
+            }
+        }
+
+        return nearestBigger == null ? null : nearestBigger.getValue();
     }
 
     private boolean isLess(E element, Node<E> node) {
@@ -116,5 +293,15 @@ public class BinarySearchTree<E extends Comparable<E>> {
 
     private boolean isEqual(E element, Node<E> node) {
         return element.compareTo(node.getValue()) == 0;
+    }
+
+    private void ensureNonEmpty() {
+        if (this.root == null) {
+            throw new IllegalArgumentException();
+        }
+    }
+
+    private int getNodeCount(Node<E> node) {
+        return node == null ? 0 : node.getCount();
     }
 }
