@@ -1,5 +1,3 @@
-import com.gs.collections.impl.lazy.parallel.list.DistinctBatch;
-
 import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Deque;
@@ -10,7 +8,7 @@ import java.util.List;
 public class BinarySearchTree<E extends Comparable<E>> {
     private Node<E> root;
 
-    public BinarySearchTree() { //56:11
+    public BinarySearchTree() {
     }
 
     public BinarySearchTree(E element) {
@@ -263,23 +261,22 @@ public class BinarySearchTree<E extends Comparable<E>> {
         Node<E> current = this.root;
         Node<E> nearestBigger = null;
 
-        while (current != null){
-            if(isLess(element, current)) {
+        while (current != null) {
+            if (isLess(element, current)) {
                 nearestBigger = current;
                 current = current.getLeft();
             } else if (isGreater(element, current)) {
                 current = current.getRight();
             } else {
                 Node<E> right = current.getRight();
-                if(right != null && nearestBigger != null){
+                if (right != null && nearestBigger != null) {
                     nearestBigger = isLess(right.getValue(), nearestBigger) ? right : nearestBigger;
-                }else if (nearestBigger == null) {
+                } else if (nearestBigger == null) {
                     nearestBigger = right;
                 }
                 break;
             }
         }
-
         return nearestBigger == null ? null : nearestBigger.getValue();
     }
 
