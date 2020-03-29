@@ -76,7 +76,7 @@ public abstract class BaseEntity implements Entity {
     @Override
     public boolean equals(Object o){
         if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+        if (o == null) return false;
         BaseEntity that = (BaseEntity) o;
         return id == that.id;
     }

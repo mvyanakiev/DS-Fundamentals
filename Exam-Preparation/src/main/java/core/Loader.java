@@ -5,7 +5,6 @@ import interfaces.Entity;
 import model.BaseEntity;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -75,18 +74,21 @@ public class Loader implements Buffer {
     @Override
     public void swap(Entity first, Entity second) {
 
-        int firstIndex = -1;
-        int secondIndex = -1;
+//        int firstIndex = -1;
+//        int secondIndex = -1;
+//
+//        int size = this.entitiesCount();
+//        for (int i = 0; i < size; i++) {
+//            if (this.data.get(i).getId() == first.getId()) {
+//                firstIndex = i;
+//            }
+//            if (this.data.get(i).getId() == second.getId()) {
+//                secondIndex = i;
+//            }
+//        }
 
-        int size = this.entitiesCount();
-        for (int i = 0; i < size; i++) {
-            if (this.data.get(i).getId() == first.getId()) {
-                firstIndex = i;
-            }
-            if (this.data.get(i).getId() == second.getId()) {
-                secondIndex = i;
-            }
-        }
+        int firstIndex = this.data.indexOf(first);
+        int secondIndex = this.data.indexOf(second);
 
         ensureIndex(firstIndex);
         ensureIndex(secondIndex);
