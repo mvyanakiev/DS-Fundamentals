@@ -57,4 +57,9 @@ public class MinHeapTest {
 
         assertEquals(2, heap.peek().getPrice());
     }
+
+    @Test
+    public void testPeak(){
+        assertEquals(5, minHeap.peek().getPrice());
+    }
 }
