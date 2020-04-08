@@ -68,23 +68,41 @@ public class ProcessScheduler implements Scheduler {
                 return true;
             }
         }
-        return false;
+        throw new IllegalArgumentException();
     }
 
     @Override
     public void insertBefore(int id, Task task) {
-        if (id >= 0 && id <= this.data.size() - 1) {
-            this.data.add(id, task);
-        } else {
+
+        boolean isInserted = false;
+
+        for (int i = 0; i < this.data.size(); i++) {
+            if(this.data.get(i).getId() == id){
+                this.data.add(i, task);
+                isInserted = true;
+                break;
+            }
+        }
+
+        if(!isInserted) {
             throw new IllegalArgumentException();
         }
     }
 
     @Override
     public void insertAfter(int id, Task task) {
-        if (id >= 0 && id <= this.data.size() - 1) {
-            this.data.add(id + 1, task);
-        } else {
+
+        boolean isInserted = false;
+
+        for (int i = 0; i < this.data.size(); i++) {
+            if(this.data.get(i).getId() == id){
+                this.data.add(i+1, task);
+                isInserted = true;
+                break;
+            }
+        }
+
+        if(!isInserted) {
             throw new IllegalArgumentException();
         }
     }
@@ -138,7 +156,7 @@ public class ProcessScheduler implements Scheduler {
         int index = this.data.indexOf(task);
 
         if (index >= 0) {
-            return this.data.get(0);
+            return this.data.get(index);
         } else {
             throw new IllegalArgumentException();
         }

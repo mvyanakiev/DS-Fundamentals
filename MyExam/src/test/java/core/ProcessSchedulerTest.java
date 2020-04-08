@@ -114,4 +114,24 @@ public class ProcessSchedulerTest {
         List<Task> taskList = scheduler.toList();
         assertEquals("Test", taskList.get(2).getDescription());
     }
+
+    @Test
+    public void testInsertBefore(){
+        Task task = new ScheduledTask(102, "Test");
+        scheduler.insertBefore(5, task);
+
+        List<Task> taskList = scheduler.toList();
+        assertEquals("Test", taskList.get(5).getDescription());
+    }
+
+    @Test
+    public void testToArray(){
+        Task[] testArray = scheduler.toArray();
+        List<Task> schedulerToList = scheduler.toList();
+
+        for (int i = 0; i < testArray.length; i++) {
+//            assertEquals(testArray[i], schedulerToList.get(i));
+            assertEquals(testArray[i], scheduler.process());
+        }
+    }
 }
