@@ -9,8 +9,7 @@ import shared.DataTransferSystem;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.*;
 
 public class MessagingSystemTest {
     private List<Message> messages;
@@ -98,6 +97,30 @@ public class MessagingSystemTest {
         assertNotNull(heaviest);
         assertEquals(19, heaviest.getWeight());
     }
+
+    @Test
+    public void testContains(){
+        Message message = new TextMessage(19, "test_text");
+        assertTrue(this.system.contains(message));
+    }
+
+    @Test
+    public void testGetByWeight(){
+        Message message = this.system.getByWeight(4);
+        assertEquals(4, message.getWeight());
+    }
+
+    @Test
+    public void testInOrder(){
+
+        List<Message> result = system.getInOrder();
+
+
+//        assertEquals(4, message.getWeight());
+    }
+
+
+
 
 //    @Test
 //    public void asList() {

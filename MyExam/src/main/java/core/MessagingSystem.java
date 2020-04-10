@@ -3,198 +3,229 @@ package core;
 import model.Message;
 import shared.DataTransferSystem;
 
-import java.util.*;
+import javax.swing.*;
+import java.util.ArrayList;
+import java.util.List;
 
 public class MessagingSystem implements DataTransferSystem {
-    private List<Message> elements;
+    private Node root;
+    private int size;
+
+    public static class Node {
+        public Message message;
+        public Node left;
+        public Node right;
+
+        public Node(Message message) {
+            this.message = message;
+        }
+    }
 
     public MessagingSystem() {
-        this.elements = new ArrayList<>();
     }
 
     @Override
     public void add(Message message) {
-        if (this.elements.contains(message)) {
-            throw new IllegalArgumentException();
+        Node newNode = new Node(message);
+        if (this.root == null) {
+            this.root = newNode;
+        } else {
+            Node current = this.root;
+            Node prev = current;
+            while (current != null) {
+                prev = current;
+                if (current.message.getWeight() > message.getWeight()) {
+                    current = current.left;
+                } else if (current.message.getWeight() < message.getWeight()) {
+                    current = current.right;
+                } else {
+                    throw new IllegalArgumentException();
+                }
+            }
+
+            current = newNode;
+
+            if (prev.message.getWeight() > current.message.getWeight()) {
+                prev.left = current;
+            } else {
+                prev.right = current;
+            }
         }
 
-        this.elements.add(message);
-        this.heapifyUp(this.size() - 1);
+        this.size++;
     }
 
     @Override
     public Message getByWeight(int weight) {
+        return getNodeByKey(weight).message;
+    }
 
-        for (Message element : this.elements) {
-            if (element.getWeight() == weight) {
-                return element;
+    private Node getNodeByKey(int weight) {
+        Node current = this.root;
+        while (current != null) {
+            if (current.message.getWeight() > weight) {
+                current = current.left;
+            } else if (current.message.getWeight() < weight) {
+                current = current.right;
+            } else {
+                return current;
             }
         }
-
         throw new IllegalArgumentException();
     }
 
     @Override
     public Message getLightest() {
-        List<Message> result = new ArrayList<>();
+        Node current = this.root;
 
-        int startIndex = 0;
-
-        while (this.getLeft(startIndex) != null) {
-            Message message = this.getLeft(startIndex);
-            result.add(message);
-            startIndex = this.elements.indexOf(message);
+        if (current == null) {
+            throw new IllegalStateException();
         }
 
-        return result.get(result.size()-1);
+        Node prev = current;
+
+        while (current != null) {
+            prev = current;
+            current = current.left;
+        }
+
+        return prev.message;
     }
 
     @Override
     public Message getHeaviest() {
-        if (this.elements.size() == 0) {
+        Node current = this.root;
+
+        if (current == null) {
             throw new IllegalStateException();
         }
-        return getAt(0);
+
+        Node prev = current;
+
+        while (current != null) {
+            prev = current;
+            current = current.right;
+        }
+
+        return prev.message;
     }
 
     @Override
     public Message deleteLightest() {
+        Node current = this.root;
 
-        List<Message> result = new ArrayList<>();
-
-        int startIndex = 0;
-
-        while (this.getLeft(startIndex) != null) {
-            Message message = this.getLeft(startIndex);
-            result.add(message);
-            startIndex = this.elements.indexOf(message);
+        if (current == null) {
+            throw new IllegalStateException();
         }
 
+        Node prev = current;
 
-        Message toRemove = this
-                .elements
-                .remove(result.size()-1);
+        while (current.left != null) {
+            prev = current;
+            current = current.left;
+        }
+        Message message;
+        if(prev.left == null){
+            message = prev.message;
+            this.root = null;
+        } else {
+            message = prev.left.message;
+            prev.left = null;
+        }
 
-        this.heapifyUp(0);
-
-        return toRemove;
+        this.size--;
+        return message;
     }
 
     @Override
     public Message deleteHeaviest() {
-        if (this.elements.size() == 0) {
-            throw new IllegalArgumentException();
+        Node current = this.root;
+
+        if(current == null){
+            throw new IllegalStateException();
         }
 
-        Message toRemove = this.elements.get(0);
-        this.elements.remove(0);
-        this.heapifyUp(this.size() - 1);
-        return toRemove;
+        Node prev = current;
+
+        while (current.right != null){
+            prev = current;
+            current =current.right;
+        }
+        Message message;
+        if(prev.right == null){
+            message = prev.message;
+            this.root = null;
+        } else {
+            message = prev.right.message;
+            prev.right = null;
+        }
+
+        this.size--;
+        return message;
     }
 
     @Override
     public Boolean contains(Message message) {
-        return this.elements.contains(message);
+        try {
+            getNodeByKey(message.getWeight());
+        } catch (IllegalArgumentException ignored){
+            return false;
+        }
+        return true;
     }
 
     @Override
     public List<Message> getOrderedByWeight() {
-//        Queue queue = new PriorityQueue();
-//
-//        for (Message message : elements) {
-//            queue.offer(message);
-//        }
-
-        return new ArrayList<>(this.elements);
+        return getInOrder();
     }
 
     @Override
     public List<Message> getPostOrder() {
-
-
-//        List<Message> result = new ArrayList<>();
-//        result.add(this.elements.get(0));
-//
-//        int startIndex = 0;
-//
-//
-//        while (this.getLeft(startIndex) != null) {
-//            Message message = this.getLeft(startIndex);
-//            result.add(message);
-//            startIndex = this.elements.indexOf(message);
-//        }
-//
-//
-//        int startR = 0;
-//
-//        while (this.getRight(startR) != null) {
-//            Message message = this.getRight(startR);
-//            result.add(message);
-//            startR = this.elements.indexOf(message);
-//        }
-
-        return new ArrayList<>(this.elements);
-
+        List<Message> messages = new ArrayList<>();
+        this.postOrder(this.root, messages);
+        return messages;
     }
 
     @Override
     public List<Message> getPreOrder() {
-        return new ArrayList<>(this.elements);
+        List<Message> messages = new ArrayList<>();
+        this.preOrder(this.root, messages);
+        return messages;
+    }
+
+    private void preOrder(Node node, List<Message> messages){
+        if(node != null){
+            messages.add(node.message);
+            preOrder(node.left, messages);
+            preOrder(node.right, messages);
+        }
     }
 
     @Override
     public List<Message> getInOrder() {
-        return new ArrayList<>(this.elements);
+        List<Message> messages = new ArrayList<>();
+        this.inOrder(this.root, messages);
+        return messages;
+    }
+
+    private void inOrder(Node node, List<Message> messages) {
+        if(node != null){
+            inOrder(node.left, messages);
+            messages.add(node.message);
+            inOrder(node.right, messages);
+        }
+    }
+
+    private void postOrder(Node node, List<Message> messages){
+        if(node != null){
+            postOrder(node.left, messages);
+            postOrder(node.right, messages);
+            messages.add(node.message);
+        }
     }
 
     @Override
     public int size() {
-        return this.elements.size();
+        return this.size;
     }
-
-
-
-
-    public List<Message> asList(){
-        return new ArrayList<>(this.elements);
-    }
-
-    private void heapifyUp(int index) {
-        while (index > 0 && isLess(getParentIndex(index), index)) {
-            Collections.swap(this.elements, index, getParentIndex(index));
-            index = getParentIndex(index);
-        }
-    }
-
-    private boolean isLess(int childIndex, int parentIndex) {
-        return getAt(childIndex).getWeight() - (getAt(parentIndex)).getWeight() < 0;
-    }
-
-    private Message getAt(int index) {
-        return this.elements.get(index);
-    }
-
-    private int getParentIndex(int index) {
-        return (index - 1) / 2;
-    }
-
-    private Message getLeft(int index) {
-        int leftChildIndex = (index * 2) + 1;
-
-        if (leftChildIndex >= 0 && leftChildIndex < this.elements.size()) {
-            return this.elements.get(leftChildIndex);
-        }
-        return null;
-    }
-
-    private Message getRight(int index) {
-        int rightChildIndex = (index * 2) + 2;
-
-        if (rightChildIndex >= 0 && rightChildIndex < this.elements.size()) {
-            return this.elements.get(rightChildIndex);
-        }
-        return null;
-    }
-
-
 }
