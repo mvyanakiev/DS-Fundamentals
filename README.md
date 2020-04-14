@@ -1,2 +1,2 @@
 # Data-Structures-Fundamentals
-Data Structures Fundamentals with JAVA
+SoftUni Data Structures Fundamentals 03.2020
