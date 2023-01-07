@@ -172,7 +172,8 @@ public class FileExplorer implements FileManager {
             parent.getChildren().remove(file);
         }
 
-        List<File> children = destination.getChildren();
+
+        List<File> children = this.get(destination.getNumber()).getChildren();
         children.add(file);
         destination.setGetChildren(children);
     }
@@ -235,7 +236,8 @@ public class FileExplorer implements FileManager {
         }
 
         if (!this.clipboard.isEmpty()) {
-            destination.getChildren().add(this.clipboard.pop());
+            File file = this.get(destination.getNumber());
+            file.getChildren().add(this.clipboard.pop());
         }
     }
 
